@@ -2,12 +2,13 @@
 #include "world.h"
 #include <libetc.h>
 
+void func_80033B70(void);
 void func_800A9480(s16 arg0);
 void func_800AA0E0(VECTOR* arg0);
 void RestoreActorState(WorldActor*);
 s32 func_800ADFC0(void);
 static s32 func_800B0800(void);
-void func_800B58F8(u8*, RECT*);
+void InitTexturedQuads(u8*, RECT*);
 static s32 func_800B716C(void);
 static s32 func_800B7B2C(void);
 s32 func_800B7B3C(void);
@@ -70,7 +71,33 @@ u32* AllocPrims(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A0C54);
+void ReadFileRetry(int sector_no, size_t size, u_long* dst, s32 useDsRead) {
+    s32 tries;
+    int (*read)(int, size_t, u_long*, void (*)());
+
+    do {
+        read = SystemLoadFileBySector;
+        if (useDsRead != 0) {
+            read = DS_read;
+        }
+        if (read(sector_no, size, dst, NULL) != 0) {
+            tries = 10000;
+        } else {
+            tries = 0;
+            do {
+                if (SystemCdromReadChain() == 0) {
+                    break;
+                }
+                VSync(0);
+                tries++;
+            } while (tries < 10000);
+        }
+        if (tries < 10000) {
+            return;
+        }
+        func_80033B70();
+    } while (1);
+}
 
 static void func_800A0D1C(void) { D_800E55EC = 0; }
 
@@ -337,7 +364,23 @@ s32 func_800A40F0(s16 arg0) {
     return (s32)D_800BE5F0 + D_800BE5F0[arg0 + 1];
 }
 
-INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A4138);
+void InitSpritePrims(void) {
+    s32 i;
+    s32 tpage;
+
+    D_800E56F4 = 0;
+    i = 0;
+    do {
+        setSprt(&D_800C6648[i]);
+        if (GetGraphType() == 1 || GetGraphType() == 2) {
+            tpage = 0x29;
+        } else {
+            tpage = 0x19;
+        }
+        SetDrawMode((DR_MODE*)((i * 0xC) + (s32)D_800E56DC), 0, 0, tpage, NULL);
+        i++;
+    } while (i < 2);
+}
 
 void func_800A41E8(s32 arg0) {
     switch (arg0) {
@@ -1322,7 +1365,7 @@ void func_800A9334(s32 arg0) {
             rect.h = 0xF;
             D_8010AD3C->unk58 = 0x20;
         }
-        func_800B58F8(D_8010AD3C->unk90, &rect);
+        InitTexturedQuads(D_8010AD3C->unk90, &rect);
         RestoreActorState(D_8010AD3C);
     }
 }
@@ -3095,7 +3138,34 @@ void func_800B57C0(s32 arg0) { D_8010D9BA[arg0 * 4] = 0; }
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B57DC);
 
-INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B58F8);
+void InitTexturedQuads(u8* prims, RECT* rect) {
+    POLY_FT4* p;
+    s32 i;
+    s32 tpage;
+
+    if (prims != NULL && rect != NULL) {
+        i = 0;
+        p = (POLY_FT4*)prims;
+        do {
+            setlen(p, 9);
+            setcode(p, 0x2E);
+            p->r0 = p->g0 = p->b0 = 0x20;
+            p->clut = 0x7CC4;
+            if (GetGraphType() == 1 || GetGraphType() == 2) {
+                tpage = 0x129;
+            } else {
+                tpage = 0x59;
+            }
+            p->tpage = tpage;
+            p->u0 = p->u2 = rect->x;
+            p->v0 = p->v1 = rect->y;
+            p->u1 = p->u3 = rect->x + rect->w;
+            p->v2 = p->v3 = rect->y + rect->h;
+            p++;
+            i++;
+        } while (i < 2);
+    }
+}
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B59F4);
 
