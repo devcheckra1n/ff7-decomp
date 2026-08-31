@@ -4,7 +4,7 @@
 
 void func_800A9480(s16 arg0);
 void func_800AA0E0(VECTOR* arg0);
-void func_800ADA64(WorldActor*);
+void RestoreActorState(WorldActor*);
 s32 func_800ADFC0(void);
 static s32 func_800B0800(void);
 void func_800B58F8(u8*, RECT*);
@@ -54,7 +54,7 @@ void func_800A0B48(void) {
 
 static s32 func_800A0BD4(void) { return D_800D05E8; }
 
-u32* func_800A0BE4(s32 arg0) {
+u32* AllocPrims(s32 arg0) {
     u32* cur;
     u32* next;
     u32* ret;
@@ -454,7 +454,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A4F78);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A5208);
 
-WorldListNode* func_800A52A4(void) {
+WorldListNode* AllocRegionNode(void) {
     WorldListNode* node;
     WorldListNode* prev;
     WorldListNode* head;
@@ -502,7 +502,7 @@ void func_800A5348(WorldListNode* arg0, WorldListNode* arg1) {
     arg0->next = tmp;
 }
 
-void func_800A53A8(s16 arg0, s16 arg1) {
+void StartNearestRegionLoad(s16 arg0, s16 arg1) {
     WorldListNode* node;
     WorldListNode* prev;
     WorldListNode* best;
@@ -561,7 +561,7 @@ void func_800A53A8(s16 arg0, s16 arg1) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A54F0);
 
-void func_800A57C8(void) {
+void UpdateRegionLoad(void) {
     WorldListNode* node;
     WorldListNode* prev;
     WorldListNode* head;
@@ -626,7 +626,7 @@ s16 func_800A5970(void) {
     return count;
 }
 
-void func_800A59A0(void) {
+void InitChunkNodePool(void) {
     s16 i;
 
     for (i = 0; i < 0x3F; i++) {
@@ -638,7 +638,7 @@ void func_800A59A0(void) {
     D_800E5A34 = 0;
 }
 
-WorldListNode* func_800A5A20(s16 arg0) {
+WorldListNode* FindResidentRegion(s16 arg0) {
     WorldListNode* node;
     WorldListNode* prev;
     WorldListNode* head;
@@ -665,7 +665,7 @@ WorldListNode* func_800A5A20(s16 arg0) {
     return node;
 }
 
-s32 func_800A5A94(s16 arg0) {
+s32 IsRegionLoading(s16 arg0) {
     WorldListNode* node;
 
     node = D_800E5768;
@@ -702,7 +702,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A5D00);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A5E28);
 
-s32 func_800A5FB4(void) {
+s32 ExpireChunks(void) {
     WorldChunkHeader* chunk;
     WorldChunkHeader* prev;
     WorldChunkNode* node;
@@ -764,7 +764,7 @@ s32 func_800A5FB4(void) {
     return live;
 }
 
-void func_800A60D8(void) {
+void InitChunkPool(void) {
     s16 i;
 
     for (i = 0; i < 0x1F; i++) {
@@ -782,7 +782,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A63FC);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A64AC);
 
-WorldChunkHeader* func_800A67A8(void) {
+WorldChunkHeader* AllocChunk(void) {
     WorldChunkHeader* chunk;
     WorldChunkHeader* prev;
     WorldChunkHeader* head;
@@ -915,10 +915,10 @@ static void func_800A7E8C(s32 arg0) { D_80109D6C = arg0; }
 
 static void func_800A7E9C(void) {}
 
-void func_800A7EA4(void) {
+void InitWorldState(void) {
     func_800A4DDC();
-    func_800A59A0();
-    func_800A60D8();
+    InitChunkNodePool();
+    InitChunkPool();
     D_80109D54 = 0;
     D_80109D58 = 0;
     D_80109D5C = NULL;
@@ -929,9 +929,9 @@ void func_800A7EA4(void) {
     D_80109D6C = 0;
 }
 
-void func_800A7F18(void) { func_800A7F38(); }
+void func_800A7F18(void) { AbortRegionLoad(); }
 
-void func_800A7F38(void) {
+void AbortRegionLoad(void) {
     WorldListNode* node;
     WorldListNode* prev;
     WorldListNode* head;
@@ -978,7 +978,7 @@ static void func_800A82DC(void) { D_80109D54 = 1; }
 
 s32 func_800A82F0(void) { return D_80109D58; }
 
-s32 func_800A8300(s16 arg0, s16 arg1) {
+s32 IsChunkLoaded(s16 arg0, s16 arg1) {
     WorldChunkHeader* chunk;
 
     chunk = D_80109D3C;
@@ -1323,7 +1323,7 @@ void func_800A9334(s32 arg0) {
             D_8010AD3C->unk58 = 0x20;
         }
         func_800B58F8(D_8010AD3C->unk90, &rect);
-        func_800ADA64(D_8010AD3C);
+        RestoreActorState(D_8010AD3C);
     }
 }
 
@@ -1365,7 +1365,7 @@ void func_800A9678(s16 arg0) { func_800A9520(D_8010AD3C, arg0); }
 
 void func_800A96A4(s16 arg0) { func_800A9520(D_8010AD40, arg0); }
 
-void func_800A96D0(s16 arg0) {
+void BlendActorFacing(s16 arg0) {
     WorldActor* actor;
     u32 blend;
 
@@ -1588,7 +1588,7 @@ static void func_800AA2E4(s8 arg0) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AA304);
 
-WorldActor* func_800AA580(WorldActor* arg0) {
+WorldActor* FindCollidingActor(WorldActor* arg0) {
     WorldActor* hit;
     s32 rc;
 
@@ -1617,7 +1617,7 @@ WorldActor* func_800AA580(WorldActor* arg0) {
 s32 func_800AA640(void) {
     WorldActor* temp_v0;
 
-    temp_v0 = func_800AA580(D_8010AD3C);
+    temp_v0 = FindCollidingActor(D_8010AD3C);
     if (temp_v0 != NULL)
         func_800AA1B8();
     return (s32)temp_v0;
@@ -2308,7 +2308,7 @@ void func_800AD804(void) {
     }
 }
 
-s32 func_800AD928(void) {
+s32 IsAnyScriptRunning(void) {
     WorldActor* a;
     s32 flag;
 
@@ -2323,7 +2323,7 @@ s32 func_800AD928(void) {
     return flag;
 }
 
-void func_800AD970(WorldActor* actor) {
+void SaveActorState(WorldActor* actor) {
     u8 type;
     u8 slot;
     s32* out;
@@ -2343,10 +2343,10 @@ void func_800ADA08(void) {
 
     for (var_s0 = D_8010AD38; var_s0 != NULL; var_s0 = var_s0->next)
         if (!(var_s0->flags1 & 8))
-            func_800AD970(var_s0);
+            SaveActorState(var_s0);
 }
 
-void func_800ADA64(WorldActor* arg0) {
+void RestoreActorState(WorldActor* arg0) {
     s32* p;
     s32* end;
     s32 t;
@@ -2396,7 +2396,7 @@ s32 func_800ADC80(s16 arg0) {
     }
     if (D_8010AE54 < (1 << arg0)) {
         if (D_8010AE54 == 1) {
-            func_800A7F38();
+            AbortRegionLoad();
         } else if (D_8010AE54 & 4) {
             func_800B7134();
         }
@@ -2812,7 +2812,7 @@ void func_800B104C(void) {
     D_8010CAF4 = 0;
 }
 
-void func_800B10AC(WorldChunkHeader* arg0) {
+void RegisterChunk(WorldChunkHeader* arg0) {
     WorldChunkHeader** slot;
     WorldTriangle* t;
     u8* p;
@@ -2857,7 +2857,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B190C);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B1C80);
 
-void func_800B21E4(WorldChunkHeader* arg0, WorldTriangle* arg1) {
+void SetCurrentTriangle(WorldChunkHeader* arg0, WorldTriangle* arg1) {
     VECTOR pos;
     s32 inside;
     s32 zoff;
@@ -2870,7 +2870,7 @@ void func_800B21E4(WorldChunkHeader* arg0, WorldTriangle* arg1) {
         D_8010CA20 = 0;
         D_8010CA78 = 0;
         D_8010CA74 = D_8010CA24;
-        func_800B10AC(arg0);
+        RegisterChunk(arg0);
         if (arg1 != NULL) {
             *((u8*)arg1 + 0xB) |= 0x40;
         }
@@ -2890,7 +2890,7 @@ static void func_800B22E4(void) { func_800B190C(); }
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B2304);
 
-void func_800B2638(WorldTriangleRef* arg0, VECTOR* arg1) {
+void GetTriangleCenter(WorldTriangleRef* arg0, VECTOR* arg1) {
     WorldTriangle* tri;
     WorldChunkHeader* chunk;
     SVECTOR* verts;
@@ -3219,7 +3219,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B6B28);
 
 void func_800B6C84(void) {
     if (D_80115A60 == 0) {
-        func_800A7F38();
+        AbortRegionLoad();
         D_80115A40 = (u_long*)func_800A86C4(2);
         if (func_800ADC80(2) != 0) {
             D_80115A60 = 1;
@@ -3421,7 +3421,7 @@ s32 func_800B79B8(void) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B7A40);
 
-void func_800B7AC0(s16 arg0) {
+void CopyAreaName(s16 arg0) {
     u8* src;
     u8* base;
     u8* dst;
