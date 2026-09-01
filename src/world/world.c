@@ -139,7 +139,7 @@ static s32 func_800A1DE0(void) { return D_800E5634; }
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A1DF0);
 
-void func_800A1FAC(SVECTOR* arg0) {
+void SetPointTransform(SVECTOR* arg0) {
     MATRIX m;
     SVECTOR v;
     VECTOR out;
@@ -198,7 +198,7 @@ void func_800A31C0(s16 arg0) { D_800E5668 = arg0 - 0x800 + D_800E5608; }
 
 s32 func_800A31E8(void) { return !D_800E5628; }
 
-void func_800A31F8(void) {
+void UpdateFogRanges(void) {
     s32 level;
 
     if (D_800E5650 == 0) {
@@ -254,7 +254,7 @@ void func_800A3DFC(void) {
     D_800E5644 = 0x14;
     func_800B7714(0);
     func_800A2108(0, 0);
-    func_800B0098(0x10, 1);
+    ScrollLayerForward(0x10, 1);
 }
 
 void func_800A3E4C(void) {
@@ -262,7 +262,7 @@ void func_800A3E4C(void) {
     D_800E5644 = -0x14;
     func_800B7714(0);
     func_800A2108(0, 0);
-    func_800B0098(0x10, 1);
+    ScrollLayerForward(0x10, 1);
 }
 
 void func_800A3E9C(s32 arg0) {
@@ -343,18 +343,18 @@ void func_800A41E8(s32 arg0) {
     switch (arg0) {
     case 1:
         func_800A2108(0, 4);
-        func_800B0098(4, 1);
+        ScrollLayerForward(4, 1);
         break;
     case 4:
         func_800A2108(1, 4);
-        func_800AFFBC(0x10, 1);
+        ScrollLayerBack(0x10, 1);
         arg0 = 0;
         break;
     }
     D_800E56F4 = arg0;
 }
 
-void func_800A4268(void) {
+void UpdateFadeOverlay(void) {
     s32 slot;
     s32 vsync;
 
@@ -487,7 +487,7 @@ WorldListNode* AllocRegionNode(void) {
     return node;
 }
 
-void func_800A5348(WorldListNode* arg0, WorldListNode* arg1) {
+void FreeListNode(WorldListNode* arg0, WorldListNode* arg1) {
     WorldListNode* tmp;
 
     if (arg1 != NULL) {
@@ -516,7 +516,7 @@ void StartNearestRegionLoad(s16 arg0, s16 arg1) {
     s16 idx;
 
     if (D_800E5814 == 0 && D_800E5810 != NULL) {
-        if (func_800ADC80(0) != 0) {
+        if (TryAcquireLoadSlot(0) != 0) {
             bestPrev = NULL;
             best = NULL;
             bestDist = 0x7FFF;
@@ -554,7 +554,7 @@ void StartNearestRegionLoad(s16 arg0, s16 arg1) {
             if (best == NULL) {
                 func_800A0B40(0x22);
             }
-            func_800A5348(best, bestPrev);
+            FreeListNode(best, bestPrev);
         }
     }
 }
@@ -593,7 +593,7 @@ void UpdateRegionLoad(void) {
         head = D_800E5764;
         D_800E5764 = node;
         node->next = head;
-        func_800A5B88(node);
+        RegisterChunksForNode(node);
         D_800E5820 = -1;
     }
     tick = 0;
@@ -682,7 +682,7 @@ s32 IsRegionLoading(s16 arg0) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A5AD8);
 
-void func_800A5B88(WorldListNode* arg0) {
+void RegisterChunksForNode(WorldListNode* arg0) {
     WorldChunkHeader* c;
 
     c = D_80109D40;
@@ -900,7 +900,7 @@ void func_800A6BCC(SVECTOR* arg0) {
 
 void func_800A6C00(s32 arg0) {
     if (func_800A1DB0() != 2)
-        func_800A1FAC(arg0);
+        SetPointTransform(arg0);
 }
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800A6C3C);
@@ -1654,7 +1654,7 @@ void func_800AA6D0(WorldChunkHeader* arg0) {
         }
     }
 
-    func_800B0D98(arg0);
+    UpdateZolomGroundHeight(arg0);
     func_800B1C80(arg0);
 }
 
@@ -1682,7 +1682,7 @@ void func_800AA8D8(s16 arg0, s16 arg1, s16 arg2) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AA8F8);
 
-s32 func_800AAA00(u8* arg0) {
+s32 UpdateEventState(u8* arg0) {
     s32 prev;
     s32 event;
 
@@ -2281,7 +2281,7 @@ void func_800AD788(void) {
         func_800AD63C(D_8010ADE4 = D_8010AD3C = var_s0);
 }
 
-void func_800AD804(void) {
+void UpdateSurfaceEffect(void) {
     s32 kind;
 
     if (D_8010ADEC != 0 || (D_8010AD40->flags1 & 8)) {
@@ -2388,7 +2388,7 @@ void func_800ADC3C(VECTOR* arg0) { D_8010AE34 = *arg0; }
 
 void func_800ADC70(void) { D_8010AE54 = 0; }
 
-s32 func_800ADC80(s16 arg0) {
+s32 TryAcquireLoadSlot(s16 arg0) {
     if ((D_8010AE54 >> arg0) & 1) {
         if (!((-1 << (arg0 + 1)) & D_8010AE54)) {
             return 1;
@@ -2531,7 +2531,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AEA48);
 void func_800AF0A0(s32 arg0) { D_8010B174 = arg0; }
 
 void func_800AF0B0(void) {
-    void func_800AF110(void);
+    void SetupLighting(void);
     s32 i;
     s32 offset;
 
@@ -2544,10 +2544,10 @@ void func_800AF0B0(void) {
     }
 
     D_8010B3B8 = NULL;
-    func_800AF110();
+    SetupLighting();
 }
 
-void func_800AF110(void) {
+void SetupLighting(void) {
     MATRIX* m;
     s32 mode;
     s32 r;
@@ -2653,7 +2653,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AF9DC);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AFCC8);
 
-void func_800AFFBC(s32 arg0, s32 arg1) {
+void ScrollLayerBack(s32 arg0, s32 arg1) {
     s32 i;
     s32 tpage;
 
@@ -2681,7 +2681,7 @@ void func_800AFFBC(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800B0098(s32 arg0, s32 arg1) {
+void ScrollLayerForward(s32 arg0, s32 arg1) {
     s32 i;
     s32 tpage;
 
@@ -2774,7 +2774,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B0810);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B0BF4);
 
-void func_800B0D98(WorldChunkHeader* arg0) {
+void UpdateZolomGroundHeight(WorldChunkHeader* arg0) {
     VECTOR pos;
     SVECTOR dir;
     s16 chunkX;
@@ -2947,7 +2947,7 @@ void func_800B28CC(s32 arg0) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B29CC);
 
-void func_800B2E90(void) {
+void UpdateWorldMode(void) {
     func_800B22E4();
     if (D_8010CAF4 != 0) {
         if (D_8010CA8C == 3) {
@@ -3025,7 +3025,7 @@ void func_800B37E0(s32* arg0, s32* arg1) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B3828);
 
-void func_800B392C(void) {
+void InitEffectPool(void) {
     s32 off;
     s32 next;
     s32 i;
@@ -3063,7 +3063,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B4244);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B45DC);
 
-void func_800B5274(void) {
+void ResetEffectState(void) {
     u8* p;
 
     *(s16*)0x1F800010 = 0;
@@ -3111,7 +3111,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B6348);
 
 static void func_800B63E0(s32 arg0) { D_801159DC = arg0; }
 
-void func_800B63F0(s32 arg0) {
+void PlayMusicTrack(s32 arg0) {
     s16* cmd;
     s32 prev;
 
@@ -3135,7 +3135,7 @@ void func_800B63F0(s32 arg0) {
     D_80116510 = prev;
 }
 
-void func_800B64A0(void) { func_800B63F0(D_801159E0); }
+void func_800B64A0(void) { PlayMusicTrack(D_801159E0); }
 
 static s32 func_800B64C8(void) { return D_801159E0; }
 
@@ -3160,7 +3160,7 @@ void func_800B65A4(u32 arg0, s32 arg1) {
     SystemAkaoExecute();
 }
 
-void func_800B65E0(s32 arg0) {
+void ToggleAmbientSound(s32 arg0) {
     if (D_8010CB20 < arg0) {
         D_8009A000[0] = 0x20;
         D_8010CB20 = arg0;
@@ -3178,7 +3178,7 @@ void func_800B65E0(s32 arg0) {
     SystemAkaoExecute();
 }
 
-void func_800B667C(void) {
+void InitStreamState(void) {
     s32 i;
 
     i = 0;
@@ -3217,11 +3217,11 @@ void func_800B6AEC(void) {
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B6B28);
 
-void func_800B6C84(void) {
+void StartStreamRead(void) {
     if (D_80115A60 == 0) {
         AbortRegionLoad();
         D_80115A40 = (u_long*)func_800A86C4(2);
-        if (func_800ADC80(2) != 0) {
+        if (TryAcquireLoadSlot(2) != 0) {
             D_80115A60 = 1;
             D_80115A50 = 0;
             DS_read(D_800C74DC, D_800C74E0, D_80115A40, func_800B6DCC);
@@ -3315,7 +3315,7 @@ INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B7228);
 
 INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B7480);
 
-void func_800B7620(s32* arg0, s32* arg1, s32* arg2) {
+void GetSavedParams(s32* arg0, s32* arg1, s32* arg2) {
     u16* p;
     s32 flags;
 
@@ -3553,7 +3553,7 @@ void func_800B84D8(u8 arg0) {
     }
 }
 
-void func_800B851C(s32 arg0, s16 arg1, s16 arg2) {
+void OpenWorldWindow(s32 arg0, s16 arg1, s16 arg2) {
     if (g_WindowData[0].state == WSTATE_INIT) {
         D_80116288 = arg1;
         D_8011628C = arg2;
@@ -4687,7 +4687,7 @@ static void func_800BBA5C(void) {
         func_800BB9A0(func_800A9174());
         if (func_800A929C()) {
             func_800A8CE4();
-            func_800B63F0(2);
+            PlayMusicTrack(2);
             return;
         }
         func_800A8FCC();
@@ -4697,13 +4697,13 @@ static void func_800BBA5C(void) {
         case 3:
             func_800A98A4(1);
             func_800A368C(1);
-            func_800B5274();
+            ResetEffectState();
             if (func_800B64C8() < 6) {
-                func_800B63F0(func_800B7200() ? 1 : 3);
+                PlayMusicTrack(func_800B7200() ? 1 : 3);
             }
             break;
         case 6:
-            func_800B65E0(0x1EC);
+            ToggleAmbientSound(0x1EC);
             break;
         }
     }
@@ -4820,7 +4820,7 @@ void func_800BBD20(s32 arg0) {
 
                             func_800AA2E4(2);
                             func_800A9480(temp_v0);
-                            func_800B63F0(1);
+                            PlayMusicTrack(1);
                             func_800A2108(0, 6);
                             if (temp_s1 == 4)
                                 func_800A82DC();
@@ -4846,14 +4846,14 @@ void func_800BBD20(s32 arg0) {
                             }
                             func_800A9DB4(&sp10);
                             if (func_800A9240() != 0)
-                                func_800B63F0(2);
+                                PlayMusicTrack(2);
                             else
-                                func_800B63F0(1);
+                                PlayMusicTrack(1);
 
                             if (temp_s1 == 6)
-                                func_800B65E0(-0x1EC);
+                                ToggleAmbientSound(-0x1EC);
                             else if (temp_s1 == 5)
-                                func_800B65E0(-0x1ED);
+                                ToggleAmbientSound(-0x1ED);
 
                             func_800A6994(&sp10, 1);
                         }
