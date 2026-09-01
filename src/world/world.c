@@ -2557,7 +2557,30 @@ s16 func_800AE47C(VECTOR* arg0, VECTOR* arg1) {
     return func_800AE180(arg1->vx - arg0->vx, arg1->vz - arg0->vz, arg1->vx);
 }
 
-INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800AE4B8);
+void InitGradientQuads(void) {
+    CVECTOR* a;
+    CVECTOR* b;
+    POLY_G4* p;
+    s32 i;
+
+    i = 0;
+    a = &D_800C6768;
+    b = &D_800C676C;
+    do {
+        p = (POLY_G4*)((i * 0x24) + (s32)D_800C6770);
+        p->r0 = p->r1 = a->r;
+        p->g0 = p->g1 = a->g;
+        p->b0 = p->b1 = a->b;
+        p->r2 = p->r3 = b->r;
+        p->g2 = p->g3 = b->g;
+        p->b2 = p->b3 = b->b;
+        setlen(p, 8);
+        setcode(p, 0x38);
+        SetDrawMode((DR_MODE*)((i * 0xC) + (s32)D_8010B068), 0, 1, 0, NULL);
+        i++;
+    } while (i < 2);
+    D_8010B080 = 0;
+}
 
 void* func_800AE5B8(void) { return (func_800A0BD4() * 0x24) + &D_800C6770; }
 
