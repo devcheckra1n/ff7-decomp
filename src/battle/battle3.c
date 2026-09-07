@@ -291,7 +291,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DF2CC);
 
 void func_800DF528(void) {}
 
-void func_800DF530(void) {
+void BattleMenuWidgetSubReset(void) {
     BattleMenuWidgetState* s = &D_800F90C6[D_800F38A0].unk12;
 
     if (D_800F57CC == 0) {
@@ -445,7 +445,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800E05E4);
 
 void func_800E078C(void) {}
 
-void func_800E0794(void) {
+void BattleMenuFlagTableReset(void) {
     s32 i;
 
     SysMenuSetCursorMovement(&D_800F9144, 0, 0, 2, 1, 0, 0, 2, 1, 0, 0, 1, 0, 0);
