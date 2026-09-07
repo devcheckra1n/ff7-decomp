@@ -390,7 +390,7 @@ extern u8 D_800F87F0[]; // per-combatant battle-script variable bank, 0x80 B
 extern s8 D_800F8CF0;
 extern u32 D_800F8CF4[][0x18];
 extern MenuTable D_800F9132;
-extern s32 D_800F9144;
+extern MenuTable D_800F9144;
 extern s8 D_800F914E;
 extern s32 D_800F9F28[]; // size is either 4 or 5
 extern u8 D_800F9F34;
@@ -618,7 +618,24 @@ typedef struct {
     /* 0xF */ u8 unkF;
     /* 0x10 */ u8 unk10;
     /* 0x11 */ u8 unk11;
-    /* 0x12 */ u8 unk12[0x22E];
+} BattleMenuWidgetState; /* size: 0x12 */
+
+typedef struct {
+    /* 0x0 */ u16 unk0;
+    /* 0x2 */ s16 scroll;
+    /* 0x4 */ u8 unk4[2];
+    /* 0x6 */ u16 unk6;
+    /* 0x8 */ u16 unk8;
+    /* 0xA */ u8 unkA;
+    /* 0xB */ s8 cursorRow;
+    /* 0xC */ u8 unkC;
+    /* 0xD */ u8 unkD;
+    /* 0xE */ u8 unkE;
+    /* 0xF */ u8 unkF;
+    /* 0x10 */ u8 unk10;
+    /* 0x11 */ u8 unk11;
+    /* 0x12 */ BattleMenuWidgetState unk12;
+    /* 0x24 */ u8 unk24[0x21C];
 } BattleMenuWidget; /* size: 0x240 */
 
 /* State of the battle-script VM interpreted by func_800B1D48. Operands are

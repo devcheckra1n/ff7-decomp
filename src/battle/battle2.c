@@ -1096,8 +1096,11 @@ void BattleFixedPointRampInit(s32 arg0) {
     *(s32*)&D_800F10E0->unk8 = 0x10000 / arg0;
 }
 
-void func_800D51D4(s32 arg0);
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D51D4);
+void BattleFixedPointRampReconfigure(s32 arg0) {
+    if (D_800F10E0 != NULL) {
+        *(s32*)&D_800F10E0->unk8 = -*(s32*)&D_800F10E0->D_8016297C / arg0;
+    }
+}
 
 extern s32 D_800F10E4;
 extern s16 D_800F5B74;
@@ -1346,7 +1349,7 @@ void func_800D72B4(void) {
             BattleFixedPointRampInit(1);
         }
         if (elem->D_801621F2 == 2) {
-            func_800D51D4(1);
+            BattleFixedPointRampReconfigure(1);
             elem->D_801621F0 = -1;
         }
         elem->D_801621F2++;

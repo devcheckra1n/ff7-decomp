@@ -291,7 +291,26 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DF2CC);
 
 void func_800DF528(void) {}
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DF530);
+void func_800DF530(void) {
+    BattleMenuWidgetState* s = &D_800F90C6[D_800F38A0].unk12;
+
+    if (D_800F57CC == 0) {
+        s->unkA = 0;
+        s->cursorRow = 0;
+        s->unk0 = 0;
+        s->scroll = 0;
+    }
+    s->unkC = 3;
+    s->unkD = 3;
+    *(u16*)s->unk4 = 3;
+    s->unk6 = 0x12;
+    s->unk10 = 2;
+    s->unk11 = 0;
+    s->unkE = 0;
+    s->unkF = 0;
+    s->unk8 = 0;
+    func_800A4F60(D_800F38A0, 1);
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DF5C8);
 
@@ -426,7 +445,18 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800E05E4);
 
 void func_800E078C(void) {}
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800E0794);
+void func_800E0794(void) {
+    s32 i;
+
+    SysMenuSetCursorMovement(&D_800F9144, 0, 0, 2, 1, 0, 0, 2, 1, 0, 0, 1, 0, 0);
+    i = 1;
+    do {
+        if ((i != 9) && (D_800F514C[i] != 0)) {
+            func_800D9F5C(i);
+        }
+        i++;
+    } while (i < 0x20);
+}
 
 void func_800E084C(void) {
     if (D_800F3896 == 9) {

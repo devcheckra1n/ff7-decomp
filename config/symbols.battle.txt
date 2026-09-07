@@ -50,6 +50,7 @@ BATTLE_EnqueueLoadImage = 0x800D2538;
 BATTLE_FlushImageQueue = 0x800D25E8;
 BattleGetPartPosition = 0x800D3994;
 BattleEventQueuePush = 0x800D4FA8;
+BattleFixedPointRampReconfigure = 0x800D51D4;
 BattleFixedPointRampUpdate = 0x800D5230;
 BattleAnimationUpdate = 0x800D5350;
 BattleEntityGetCenter = 0x800D54EC;
