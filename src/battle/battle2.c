@@ -1368,13 +1368,35 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7724);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7888);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7A88);
+void func_800D7888(void);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7B1C);
+void func_800D7A88(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4, s32 arg5) {
+    Unk801621F0* slot = &D_801621F0[func_800BC04C(func_800D7888)];
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7BA4);
+    slot->D_801621F4 = arg0;
+    slot->D_801621F6 = arg1;
+    slot->unk1C = arg2;
+    slot->unk1A = arg3;
+    slot->unk8 = (s16)arg4;
+    slot->unkA = (s16)arg5;
+}
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7C2C);
+void func_800D7B1C(s32 arg0, s32 idx, s32 arg2, s32 arg3) {
+    func_800D7A88(arg0, idx, &D_801518E4[idx].D_80151A58[D_801518E4[idx].subModelIdx],
+                  D_801518E4[idx].D_801518FE, arg2, arg3);
+}
+
+void func_800D7BA4(s32 arg0, s32 idx, s32 arg2, s32 arg3) {
+    func_800D7A88(arg0, idx, &D_801518E4[idx].D_80151A58[D_801518E4[idx].subModelIdx2],
+                  D_801518E4[idx].D_80151900, arg2, arg3);
+}
+
+void func_800D7C2C(s32 arg0, s32 idx, s32 arg2, s32 arg3) {
+    func_800D7A88(arg0, idx, &D_801518E4[idx].D_80151A58[D_801518E4[idx].subModelIdx],
+                  D_801518E4[idx].D_801518FE, arg2, arg3);
+    func_800D7A88(arg0, idx, &D_801518E4[idx].D_80151A58[D_801518E4[idx].subModelIdx2],
+                  D_801518E4[idx].D_80151900, arg2, arg3);
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D7D3C);
 
