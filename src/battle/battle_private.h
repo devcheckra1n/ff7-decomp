@@ -69,6 +69,14 @@ typedef struct {
     /* 0x1E */ s16 unk1A;
 } Unk80162978; // size:0x20
 
+/* two u16s copied as one 4-byte unit, only compiles to lwl/lwr+swl/swr from
+   an unaligned source (matching retail) when both sides are cast through
+   this, not a plain s32 pointer cast */
+typedef struct {
+    s16 a;
+    s16 b;
+} Pair16;
+
 typedef struct {
     u16 unk0;
     s16 unk2;

@@ -13,6 +13,7 @@ extern s16 D_800EF6D8[];
 extern s16 D_800EF6FC[];
 extern s16 D_800EF838[];
 extern s16 D_800EF8D8[];
+extern s32 D_800F0F98[];
 
 s32 func_800BBF7C(void (*f)(void));
 s32 func_800BC04C(void (*f)());
