@@ -68,6 +68,8 @@ MATRIX* MulMatrix(MATRIX* m0, MATRIX* m1);
 MATRIX* MulMatrix2(MATRIX* m0, MATRIX* m1);
 long ApplyMatrixLV(MATRIX* m, VECTOR* v0, VECTOR* v1);
 void RotTrans(SVECTOR* v0, VECTOR* v1, int* flag);
+void OuterProduct12(VECTOR* v0, VECTOR* v1, VECTOR* v2);
+VECTOR* ApplyMatrix(MATRIX* m, SVECTOR* v0, VECTOR* v1);
 void SetBackColor(long rbk, long gbk, long bbk);
 void SetColorMatrix(MATRIX* m);
 void SetLightMatrix(MATRIX* m);
