@@ -79,6 +79,11 @@
 	"nop;"							\
 	".word 0x4A486012" )
 
+#define gte_rtv0tr() __asm__ volatile (				\
+	"nop;"							\
+	"nop;"							\
+	".word 0x4A480012" )
+
 #define gte_nclip() __asm__ volatile (				\
 	"nop;"							\
 	"nop;"							\
@@ -154,6 +159,7 @@
 #define gte_rtpt()
 #define gte_rt()
 #define gte_rtv0()
+#define gte_rtv0tr()
 #define gte_nclip()
 #define gte_stsxy( r0 )
 #define gte_stsxy3( r0, r1, r2 )

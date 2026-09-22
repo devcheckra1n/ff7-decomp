@@ -3,6 +3,7 @@
 #include "common.h"
 #include "game.h"
 #include "libgte.h"
+#include <psxsdk/inline_c.h>
 
 typedef struct {
     u32 unk0;
@@ -57,6 +58,19 @@ typedef struct {
     /* 0x94 */ s16 unk94;
     /* 0x96 */ u8 unk96[0xE];
 } ChocoboRacer; // size: 0xA4
+
+typedef struct {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ SVECTOR verts[1];
+} ChocoboVertexBlock;
+
+typedef struct {
+    /* 0x00 */ u8 unk0[2];
+    /* 0x02 */ u8 vertexCount;
+    /* 0x03 */ u8 unk3[0x15];
+    /* 0x18 */ ChocoboVertexBlock* verts;
+    /* 0x1C */ u8 unk1C[4];
+} ChocoboModelPart; // size: 0x20
 
 extern UnkRectData D_800A0020;
 extern UnkRectData D_800A0028;
@@ -428,7 +442,35 @@ INCLUDE_ASM("asm/us/mini/chocobo/nonmatchings/chocobo", func_800AF11C);
 
 INCLUDE_ASM("asm/us/mini/chocobo/nonmatchings/chocobo", func_800AF9E4);
 
-INCLUDE_ASM("asm/us/mini/chocobo/nonmatchings/chocobo", func_800AFC64);
+static void ChocoboScalePartVerts(ChocoboModelPart* part, s16 scale, s32 force) {
+    MATRIX* m = (MATRIX*)0x1F800000;
+    s16* result = (s16*)0x1F800020;
+    SVECTOR* verts;
+    s32 i;
+    u32 count;
+
+    if ((part->verts->flags & 1) && force == 0) {
+        return;
+    }
+    m->m[0][0] = scale;
+    m->m[1][1] = scale;
+    m->m[2][2] = scale;
+    m->m[0][1] = m->m[0][2] = m->m[1][0] = m->m[1][2] = m->m[2][0] = m->m[2][1] = m->t[0] = m->t[1] = m->t[2] = 0;
+    gte_SetRotMatrix(m);
+    gte_SetTransMatrix(m);
+
+    count = part->vertexCount;
+    verts = part->verts->verts;
+    for (i = 0; i < count; i++) {
+        gte_ldv0(&verts[i]);
+        gte_rtv0tr();
+        gte_stlvnl(result);
+        verts[i].vx = result[0];
+        verts[i].vy = result[2];
+        verts[i].vz = result[4];
+    }
+    part->verts->flags |= 1;
+}
 
 INCLUDE_ASM("asm/us/mini/chocobo/nonmatchings/chocobo", func_800AFDBC);
 

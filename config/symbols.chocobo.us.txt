@@ -7,3 +7,4 @@ ChocoboMarkEntry = 0x800A8940;
 ChocoboCalcAngle = 0x800A89A0;
 ChocoboCalcAngleToPoint = 0x800A8A18;
 ChocoboDrawText = 0x800AD7B8;
+ChocoboScalePartVerts = 0x800AFC64;
